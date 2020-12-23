@@ -118,22 +118,22 @@ var typeMap = new Map([
                 prefix: 'circle_edit_',
                 formNameEditArr: [], // 对应需要编辑的选项
                 nodeInit: function (node, params) {
-                    // node.text = 'asdsad'
-                    // node.zIndex = -1
                     node.__type = 'circle'
+                    node.zIndex = -1
                     node.paint = function(g) {
+                        g.save()
                         g.beginPath();
-                        // g.moveTo(0,0);
-                        g.fillStyle = 'rgba(255, 0, 0, 0.25)';
+                        g.moveTo(0,0);
+                        g.fillStyle = 'rgba(255, 0, 0, 1)';
                         // g.strokeStyle = "blue";
                         // g.fillStyle = 'rgba(255,255,255,0)'
                         let minRadius = node.width >= node.height ? node.height : node.width
                         g.arc(0, 0, minRadius / 2,0, Math.PI*2);
                         g.fill();
                         g.closePath();
-
+                        //
                         g.restore()
-                        // this.paintText(g);
+                        this.paintText(g);
                     }
                 }
             }

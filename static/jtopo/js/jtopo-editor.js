@@ -534,6 +534,7 @@ TopologyEditor.prototype.init = function (topologyGuid, backImg, topologyJson) {
     let canvas = document.getElementById('topology-canvas')
     canvas.width = $('#topology-body').width()
     canvas.height = $('#topology-body').height()
+    // canvas.width = 200; canvas.height = 200
     // 加载空白的编辑器
     if (topologyJson === '-1') {
         this.stage = new JTopo.Stage(canvas)         // 定义舞台对象
@@ -978,8 +979,11 @@ TopologyEditor.prototype.getLink = function(endNode) {
         flexLine: 'FlexionalLink',
         curveLine: 'CurveLink'
     }
-    let LinkArgument = endNode ? [this.beginNode,endNode] : [this.tempNodeA,this.tempNodeZ]
+    let LinkArgument = endNode ? [this.beginNode,endNode,'test'] : [this.tempNodeA,this.tempNodeZ]
     let link = new JTopo[`${lineLink[this.lineType]}`](...LinkArgument)
+    link.fontColor = '0,0,0'
+    link.alpha = '1'
+    console.log('link',link)
     link.lineType = `${lineLink[this.lineType]}`
     if (this.lineType === 'foldLine' || this.lineType === 'flexLine') {
         link.direction = this.config.linkDirection

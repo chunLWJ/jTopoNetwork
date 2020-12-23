@@ -2082,9 +2082,12 @@
                 var c = b[0],
                     d = b[b.length - 1];
                 if (4 == b.length && (c = b[1], d = b[2]), this.text && this.text.length > 0) {
+                    // console.log(d,c)
                     var e = (d.x + c.x) / 2 + this.textOffsetX,
                         f = (d.y + c.y) / 2 + this.textOffsetY;
                     a.save(), a.beginPath(), a.font = this.font;
+
+                    var angle = Math.atan2(c.x - d.x, c.y - d.y) * 180 / Math.PI
                     var g = a.measureText(this.text).width,
                         h = a.measureText("田").width;
                     if (a.fillStyle = "rgba(" + this.fontColor + ", " + this.alpha + ")", this.nodeA === this.nodeZ) {
@@ -2092,7 +2095,22 @@
                             e = this.nodeA.x + j * Math.cos(i),
                             f = this.nodeA.y + j * Math.sin(i);
                         a.fillText(this.text, e, f)
-                    } else a.fillText(this.text, e - g / 2, f - h / 2);
+                    } else {
+                        console.log('angle',angle)
+                        // a.fillText(this.text, e - g / 2, f - h / 2);
+                        // console.log(Math.atan2((c.x - d.x), (c.y - d.y)))
+                        // console.log(Math.atan2((c.x - d.x), (c.y - d.y)) *( 180 /Math.PI))
+                        // a.save();
+                        // a.rotate(90)
+                        console.log(this.width)
+                        a.fillText(this.text,d.x - this.width - g, d.y )
+                        // a.translate(-a.canvas.clientWidth / 2, -a.canvas.clientHeight / 2)
+                        // a.translate(-(d.x - g - this.width), -(d.y - h / 2))
+                        // a.restore();
+                        // console.log(angle)
+                        // a.fill()
+                        a.fillText('teat',c.x + g, c.y  )
+                    };
                     a.stroke(), a.closePath(), a.restore()
                 }
             }, this.paintSelected = function (a) {

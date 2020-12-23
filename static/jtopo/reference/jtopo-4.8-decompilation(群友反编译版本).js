@@ -4353,7 +4353,8 @@
           y = this.nodeA.y + dy * Math.sin(ratio);
           context.fillText(this.text, gx, y);
         } else {
-          context.fillText(this.text, gx - beginWidth / 2, y - lw / 2);
+          // context.fillText(this.text, gx - beginWidth / 2, y - lw / 2);
+          context.fillText(this.text,beginWidth / 2, lw / 2)
         }
         context.stroke();
         context.closePath();
