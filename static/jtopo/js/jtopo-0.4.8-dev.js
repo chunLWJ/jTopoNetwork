@@ -2087,7 +2087,7 @@
                         f = (d.y + c.y) / 2 + this.textOffsetY;
                     a.save(), a.beginPath(), a.font = this.font;
 
-                    var angle = Math.atan2(c.x - d.x, c.y - d.y) * 180 / Math.PI
+                    // var angle = Math.atan2(c.x - d.x, c.y - d.y) * 180 / Math.PI
                     var g = a.measureText(this.text).width,
                         h = a.measureText("田").width;
                     if (a.fillStyle = "rgba(" + this.fontColor + ", " + this.alpha + ")", this.nodeA === this.nodeZ) {
@@ -2096,20 +2096,16 @@
                             f = this.nodeA.y + j * Math.sin(i);
                         a.fillText(this.text, e, f)
                     } else {
-                        console.log('angle',angle)
+                        function getRectXY(x,y){
+                            return {
+                                x: (19*x.x + y.x)/20,
+                                y: (19*x.y + y.y)/20,
+                            }
+                        }
+                        let {x: rx,y: ry} = getRectXY(d,c)
                         // a.fillText(this.text, e - g / 2, f - h / 2);
-                        // console.log(Math.atan2((c.x - d.x), (c.y - d.y)))
-                        // console.log(Math.atan2((c.x - d.x), (c.y - d.y)) *( 180 /Math.PI))
-                        // a.save();
-                        // a.rotate(90)
-                        console.log(this.width)
-                        a.fillText(this.text,d.x - this.width - g, d.y )
-                        // a.translate(-a.canvas.clientWidth / 2, -a.canvas.clientHeight / 2)
-                        // a.translate(-(d.x - g - this.width), -(d.y - h / 2))
-                        // a.restore();
-                        // console.log(angle)
-                        // a.fill()
-                        a.fillText('teat',c.x + g, c.y  )
+                        a.fillText(this.text, rx - g / 2, ry - h/2 )
+                        a.fillText('teat',d.x - rx,d.y - ry  )
                     };
                     a.stroke(), a.closePath(), a.restore()
                 }
