@@ -404,6 +404,7 @@ TopologyEditor.prototype.initMenus = function () {
         if (nodes.length < 0) return
         if (nodes.length > 1) return alert('暂时不支持多编辑')
         let [node] = nodes
+        console.log(node)
         if (node.__type__) {
             $('.form_title').html('编辑')
             $('.node_submit').data('edit', true)
@@ -985,6 +986,7 @@ TopologyEditor.prototype.drag = function (modeDiv, drawArea, text) {
 
 /**
  * 获取线，根据是否有 endNode 来生成不同的 Link
+ * 这个单纯是优化一下上面的重复代码，不过觉得还是很乱，因为这里存在各种各样的线，不一样的线部分配置也不一样，所以乱，不过一般不需要理，我也没读懂多少
  * @param endNode
  * @returns {*}
  */
@@ -1023,22 +1025,18 @@ TopologyEditor.prototype.getLink = function(endNode) {
     return link
 }
 
-TopologyEditor.prototype.addNode = function(type,nodeOption){
+
+
+/* 以下是 自己往原型添加的一些方法，比如添加节点，同步节点和表单的数据... */
+// 添加节点
+TopologyEditor.prototype.addNode = function(type){
     let typeOption = typeMap.get(type)
     let node = new JTopo[typeOption.jTopoNodeName]()
     node.setLocation(this.xInCanvas,this.yInCanvas)
     // 打上 类型 标记
     node.__type__ = type
 
-    this.nodeFormSync(node,nodeOption,typeOption.formNameEditArr)
-    // // 已 __ 开头为标注为 自定义属性
-    // for (let optionKey in nodeOption) node[optionKey] = nodeOption[optionKey]
-    // // 选项的 formNameEditArr 表示可以直接赋值到 node 上，并产生相应的效果
-    // typeOption.formNameEditArr.forEach(item => {
-    //     // 对一些 特殊属性 进行 处理，比如 字体颜色需要是 0,0,0 而不是 #000
-    //     if (item === 'fontColor') node[item] = nodeOption[`__${item}`].colorRgb()
-    //     else node[item] = nodeOption[`__${item}`]
-    // })
+    this.nodeFormSync(node,typeOption.formNameEditArr)
 
     // nodeInit 是函数 就执行函数
     typeof typeOption.nodeInit === "function" && typeOption.nodeInit(node)
@@ -1052,11 +1050,28 @@ TopologyEditor.prototype.addNode = function(type,nodeOption){
  * @param insides {Array<String>} 可以直接赋值到 node 节点内部的数组属性列表
  * @param editForm {Boolean} 是否 表单 赋值，这个功能感觉有点怪异，这里后续再优化
  */
-TopologyEditor.prototype.nodeFormSync = function(node,formOptions ,insides = []){
+TopologyEditor.prototype.nodeFormSync = function(node ,insides = []){
 
-    let options = formOptions || getStart__Obj(node)
+    if (!node.__type__) throw new Error('不是自定义绘图类型！')
+    let options = this.getTypeFormOptions(node.__type__)
+    console.log('options',options)
+
+
     // 已 __ 开头为标注为 自定义属性
-    for (let optionKey in options) node[optionKey] = options[optionKey]
+    // for (let optionKey in options) node[optionKey] = options[optionKey]
+    // 这里需要优化一些，变得稍微复杂了些
+    // 我们这里假设 已 __ 开头 的属性只有一个的时候是 添加，添加的时候只需要无脑赋值即可
+    // 但是多个的时候就是编辑，这个时候我们需要根据 属性 存在 赋值，不存在则删了，这个是比如 虚线开关，存在的时候是 true，不存在的时候就完全没有这个属性，但是如果不删除，属性保留了，绘图就存在问题。
+    let __names = getStart__Obj(node),__namesLength = Object.keys(__names).length;
+    if (__namesLength === 1)
+        for (let optionKey in options) node[optionKey] = options[optionKey]
+    else
+        for (const namesKey in __names)
+            if (namesKey === '__type__') continue
+            else if (namesKey in node)
+                node[namesKey] = options[namesKey]
+            else
+                delete node[namesKey]
 
     // 选项的 formNameEditArr 表示可以直接赋值到 node 上，并产生相应的效果
     insides.forEach(item => {
@@ -1067,7 +1082,8 @@ TopologyEditor.prototype.nodeFormSync = function(node,formOptions ,insides = [])
 }
 
 
-// 同步函数重新写
+// 编辑的时候，表单数据复原
+// 这个还存在问题，单独只是 Input 标签可以实现，别的输入标签就不行。
 TopologyEditor.prototype.editSyncForm = function(node){
     // let typeOption = typeMap.get(node.__type__) // 拿到 表单 配置
     let form = $(`#${node.__type__}_edit_form`)
@@ -1079,20 +1095,6 @@ TopologyEditor.prototype.editSyncForm = function(node){
     }
 }
 
-// 去掉。。。本质上这个过程跟名字不大符合，而且完全没有任何的关系
-TopologyEditor.prototype.newNode = function(type) {
-    let typeOption = typeMap.get(type)
-    let form = $(`#${type}_edit_form`)
-    if (form.length === 0) throw new Error(`存在对应的表单名：${type}_edit_form`)
-
-    let formOption = form.serializeArray()
-    console.log('formOption',formOption)
-    let options = {}
-    formOption.forEach(option => options[`__${option.name}`] = option.value)
-    form[0] && form[0].reset()
-    this.addNode(type,options)
-}
-
 // 返回指定类型的表单
 TopologyEditor.prototype.getTypeFormOptions = function(type) {
     let form = $(`#${type}_edit_form`)
@@ -1102,19 +1104,25 @@ TopologyEditor.prototype.getTypeFormOptions = function(type) {
     formOption.forEach(option => options[`__${option.name}`] = option.value)
     return options
 }
+
+// 节点添加编辑
 TopologyEditor.prototype.nodeAddEdit = function(type, edit = false) {
     let typeOption = typeMap.get(type)
     // 添加
-    if (!edit) typeMap.get(type) && this.newNode(type)
+    if (!edit) typeMap.get(type) && this.addNode(type)
     else { // 编辑
         let [node] = this.utils.getSelectedNodes()
         let nodes = this.utils.getSelectedNodes()
         if (nodes.length === 1)
-            this.nodeFormSync(node,undefined,typeOption.formNameEditArr)
+            this.nodeFormSync(node,typeOption.formNameEditArr)
         else console.log('暂时不支持多编辑')
     }
     typeMap.get(type) && typeMap.get(type).toggleModal()
 }
+/* 以上是 自己往原型添加的一些方法，比如添加节点，同步节点和表单的数据... */
+
+
+
 
 // 编辑器实例
 var editor = new TopologyEditor('mainControl')

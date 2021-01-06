@@ -84,9 +84,15 @@ var typeMap = new Map([
         [
             'text', {
                 jTopoNodeName: 'TextNode',
+                // jTopoNodeName: 'Node',
                 toggleModal: () => $('#text_edit').modal('toggle'),
                 prefix: 'text_edit_',
                 formNameEditArr: ['text', 'fontColor'], // 对应需要编辑的选项
+                // nodeInit: function (node) {
+                //     node.paint = function(g) {
+                //         g.fillText(this.text,0,0)
+                //     }
+                // }
             }
         ],
         [
@@ -118,7 +124,7 @@ var typeMap = new Map([
                 prefix: 'shape_edit_',
                 formNameEditArr: [], // 对应需要编辑的选项
                 nodeInit: function (node) {
-                    node.zIndex = -1
+                    // node.zIndex = -1
                     // if (node.__selectShape === 'rect') {
                     //     node.showSelected = false
                     // }
