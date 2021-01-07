@@ -84,22 +84,14 @@ var typeMap = new Map([
         [
             'text', {
                 jTopoNodeName: 'TextNode',
-                // jTopoNodeName: 'Node',
                 toggleModal: () => $('#text_edit').modal('toggle'),
-                prefix: 'text_edit_',
                 formNameEditArr: ['text', 'fontColor'], // 对应需要编辑的选项
-                // nodeInit: function (node) {
-                //     node.paint = function(g) {
-                //         g.fillText(this.text,0,0)
-                //     }
-                // }
             }
         ],
         [
             'image', {
                 jTopoNodeName: 'Node',
                 toggleModal: () => $('#image_edit').modal('toggle'),
-                prefix: 'image_edit_',
                 formNameEditArr: ['alpha'], // 对应需要编辑的选项
                 nodeInit: function (node) {
                     node.setImage(node.__src)
@@ -110,7 +102,6 @@ var typeMap = new Map([
             'interface', {
                 jTopoNodeName: 'Node',
                 toggleModal: () => $('#interface_edit').modal('toggle'),
-                prefix: 'interface_edit_',
                 formNameEditArr: [], // 对应需要编辑的选项
                 nodeInit: function (node) {
                     node.setImage(images[Math.floor(Math.random() * images.length)])
@@ -121,7 +112,6 @@ var typeMap = new Map([
             'shape', {
                 jTopoNodeName: 'Node',
                 toggleModal: () => $('#shape_edit').modal('toggle'),
-                prefix: 'shape_edit_',
                 formNameEditArr: [], // 对应需要编辑的选项
                 nodeInit: function (node) {
                     // node.zIndex = -1

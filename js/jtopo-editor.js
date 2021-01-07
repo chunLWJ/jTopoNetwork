@@ -28,28 +28,7 @@ TopologyPanel.prototype.saveTopology = function (url) {
         }
         containers[c].childNodes = temp.join(',')
     }
-    let topologyJSON = editor.stage.toJson()
-    alert('保存成功')
-    // $.ajax({
-    //     type: 'POST',
-    //     url: url,
-    //     async: false,
-    //     data: JSON.stringify({'topology_json': topologyJSON}),
-    //     contentType: 'application/json',
-    //     dataType: 'json',
-    //     error: function () {
-    //         // alert('服务器异常，请稍后重试..')
-    //     },
-    //     success: function (response) {
-    //         // 错误处理
-    //         if (response.code !== 200) {
-    //             console.error(response.msg)
-    //         } else {
-    //             editor.stageMode = 'edit'
-    //             self.replaceStage(url)
-    //         }
-    //     }
-    // })
+    // alert(editor.stage.toJson())
 }
 
 /**
@@ -57,7 +36,7 @@ TopologyPanel.prototype.saveTopology = function (url) {
  */
 TopologyPanel.prototype.resetTopology = function (url) {
     editor.stageMode = 'edit'
-    this.replaceStage(url)
+    // this.replaceStage(url)
 }
 
 /**
@@ -157,7 +136,6 @@ TopologyPanel.prototype.deleteAllNodes = function () {
     // 连线重置
     editor.beginNode = null
     editor.link = null
-    // alert('已清空拓扑图')
 }
 
 /**
@@ -186,7 +164,7 @@ function TopologyEditor() {
         nodeScale: 0.2,                       // 节点缩放幅度(此处保证X和Y均等缩放)
         // Link属性
         linkAlpha: 1,                         // 连线透明度,取值范围[0-1]
-        linkStrokeColor: '123,165,241',     // 连线的颜色
+        linkStrokeColor: '#0066aa'.colorRgb(), // 连线的颜色
         linkFillColor: '123,165,241',
         linkShadow: false,                   // 是否显示连线阴影
         linkShadowColor: 'rgba(0,0,0,0.5)',
@@ -207,7 +185,6 @@ function TopologyEditor() {
         containerBorderColor: 'black',
         containerBorderRadius: 30,
 
-        textFontColor: '0,0,0',
     }
     this.xInCanvas = 0
     this.yInCanvas = 0
@@ -217,7 +194,8 @@ function TopologyEditor() {
     this.stage = null
     this.scene = null
     // 当前模式
-    this.stageMode = 'edit'
+    // this.stageMode = 'edit'
+    this.stageMode = 'select'
     // 默认连线类型
     this.lineType = 'line'
     // 当前选择的节点对象
@@ -770,7 +748,7 @@ TopologyEditor.prototype.init = function (topologyGuid, backImg, topologyJson) {
                     }
                      *****************************************************************/
                     let link = self.getLink(endNode)
-
+                    link.strokeColor = self.config.linkStrokeColor
                     this.add(link)
                     self.beginNode = null
                     this.remove(self.link)
