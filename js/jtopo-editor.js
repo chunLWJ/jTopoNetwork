@@ -1084,10 +1084,10 @@ TopologyEditor.prototype.getTypeFormOptions = function(type) {
 }
 
 // 节点添加编辑
-TopologyEditor.prototype.nodeAddEdit = function(type, edit = false) {
+TopologyEditor.prototype.nodeAddEdit = function(type) {
     let typeOption = typeMap.get(type)
     // 添加
-    if (!edit) typeMap.get(type) && this.addNode(type)
+    if (!this.nodeEdit) typeMap.get(type) && this.addNode(type)
     else { // 编辑
         let [node] = this.utils.getSelectedNodes()
         let nodes = this.utils.getSelectedNodes()

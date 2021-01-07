@@ -210,7 +210,6 @@
             <!-- 舞台右键菜单 -->
             <div id="main-menu" class="right-click-menu" style="z-index: 9">
 
-                <!--                        onClick="editor.utils.scalingBig()"-->
                 <div class="fa fa-plus menu-item"
                      data-type="text"
                      onMouseMove="this.style.backgroundColor='#c5e7f6'"
@@ -229,53 +228,53 @@
                      onMouseOut="this.style.backgroundColor=''">
                     <span>添加形状</span>
                 </div>
-                <div class="fa fa-search-plus menu-item"
-                     onClick="editor.utils.scalingBig()"
-                     onMouseMove="this.style.backgroundColor='#c5e7f6'"
-                     onMouseOut="this.style.backgroundColor=''">
-                    <span>放大(Shift+)</span>
-                </div>
-                <div class="fa fa-search-minus menu-item" onClick="editor.utils.scalingSmall()"
-                     onMouseMove="this.style.backgroundColor='#c5e7f6'"
-                     onMouseOut="this.style.backgroundColor=''">
-                    <span>缩小(Shift-)</span>
-                </div>
-                <div class="fa fa-trash-o menu-item" onClick="editor.utils.clearTopology();"
-                     onMouseMove="this.style.backgroundColor='#c5e7f6'"
-                     onMouseOut="this.style.backgroundColor=''">
-                    <span>清空(Shift+Y)</span>
-                </div>
-                <div class="fa fa-eye menu-item" onClick="editor.utils.showPic();"
-                     onMouseMove="this.style.backgroundColor='#c5e7f6'"
-                     onMouseOut="this.style.backgroundColor=''">
-                    <span>预览(Shift+P)</span>
-                </div>
-                <div class="fa fa-arrows menu-item"
-                     onClick="editor.utils.showInFullScreen(editor.stage.canvas,'RequestFullScreen')"
-                     onMouseMove="this.style.backgroundColor='#c5e7f6'"
-                     onMouseOut="this.style.backgroundColor=''">
-                    <span>全屏查看(Shift+F)</span>
-                </div>
-                <div class="fa fa-align-center menu-item" onClick="editor.utils.showInCenter()"
-                     onMouseMove="this.style.backgroundColor='#c5e7f6'"
-                     onMouseOut="this.style.backgroundColor=''">
-                    <span>居中显示(Shift+G)</span>
-                </div>
-                <div class="fa fa-floppy-o menu-item" onClick="editor.saveTopology(true)"
-                     onMouseMove="this.style.backgroundColor='#c5e7f6'"
-                     onMouseOut="this.style.backgroundColor=''">
-                    <span>保存(Shift+S)</span>
-                </div>
-                <div class="fa fa-question-circle menu-item" onclick="alert('帮助文档')"
-                     onMouseMove="this.style.backgroundColor='#c5e7f6'"
-                     onMouseOut="this.style.backgroundColor=''">
-                    <span id="showHelp">查看帮助(Shift+H)</span>
-                </div>
-                <div class="fa fa-info-circle menu-item"
-                     onclick="window.open('json_view.html', '当前拓扑结构JSON展示', '').document.write(editor.stage.toJson())"
-                     onMouseMove="this.style.backgroundColor='#c5e7f6'"
-                     onMouseOut="this.style.backgroundColor=''">
-                    <span id="showJSON">查看拓扑JSON结构</span></div>
+<!--                <div class="fa fa-search-plus menu-item"-->
+<!--                     onClick="editor.utils.scalingBig()"-->
+<!--                     onMouseMove="this.style.backgroundColor='#c5e7f6'"-->
+<!--                     onMouseOut="this.style.backgroundColor=''">-->
+<!--                    <span>放大(Shift+)</span>-->
+<!--                </div>-->
+<!--                <div class="fa fa-search-minus menu-item" onClick="editor.utils.scalingSmall()"-->
+<!--                     onMouseMove="this.style.backgroundColor='#c5e7f6'"-->
+<!--                     onMouseOut="this.style.backgroundColor=''">-->
+<!--                    <span>缩小(Shift-)</span>-->
+<!--                </div>-->
+<!--                <div class="fa fa-trash-o menu-item" onClick="editor.utils.clearTopology();"-->
+<!--                     onMouseMove="this.style.backgroundColor='#c5e7f6'"-->
+<!--                     onMouseOut="this.style.backgroundColor=''">-->
+<!--                    <span>清空(Shift+Y)</span>-->
+<!--                </div>-->
+<!--                <div class="fa fa-eye menu-item" onClick="editor.utils.showPic();"-->
+<!--                     onMouseMove="this.style.backgroundColor='#c5e7f6'"-->
+<!--                     onMouseOut="this.style.backgroundColor=''">-->
+<!--                    <span>预览(Shift+P)</span>-->
+<!--                </div>-->
+<!--                <div class="fa fa-arrows menu-item"-->
+<!--                     onClick="editor.utils.showInFullScreen(editor.stage.canvas,'RequestFullScreen')"-->
+<!--                     onMouseMove="this.style.backgroundColor='#c5e7f6'"-->
+<!--                     onMouseOut="this.style.backgroundColor=''">-->
+<!--                    <span>全屏查看(Shift+F)</span>-->
+<!--                </div>-->
+<!--                <div class="fa fa-align-center menu-item" onClick="editor.utils.showInCenter()"-->
+<!--                     onMouseMove="this.style.backgroundColor='#c5e7f6'"-->
+<!--                     onMouseOut="this.style.backgroundColor=''">-->
+<!--                    <span>居中显示(Shift+G)</span>-->
+<!--                </div>-->
+<!--                <div class="fa fa-floppy-o menu-item" onClick="editor.saveTopology(true)"-->
+<!--                     onMouseMove="this.style.backgroundColor='#c5e7f6'"-->
+<!--                     onMouseOut="this.style.backgroundColor=''">-->
+<!--                    <span>保存(Shift+S)</span>-->
+<!--                </div>-->
+<!--                <div class="fa fa-question-circle menu-item" onclick="alert('帮助文档')"-->
+<!--                     onMouseMove="this.style.backgroundColor='#c5e7f6'"-->
+<!--                     onMouseOut="this.style.backgroundColor=''">-->
+<!--                    <span id="showHelp">查看帮助(Shift+H)</span>-->
+<!--                </div>-->
+<!--                <div class="fa fa-info-circle menu-item"-->
+<!--                     onclick="window.open('json_view.html', '当前拓扑结构JSON展示', '').document.write(editor.stage.toJson())"-->
+<!--                     onMouseMove="this.style.backgroundColor='#c5e7f6'"-->
+<!--                     onMouseOut="this.style.backgroundColor=''">-->
+<!--                    <span id="showJSON">查看拓扑JSON结构</span></div>-->
             </div>
             <!-- 分组选项(二级菜单) -->
             <div id="group-mange-menu" class="right-click-menu" style="z-index: 9">

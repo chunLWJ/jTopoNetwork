@@ -72,6 +72,42 @@ let images = [
     './img/icon_firewall.png',
     './img/icon_proxy_server.png',
 ]
+
+class TypeOption {
+    /**
+     * 创建节点的值
+     * @type {JTopo.Node || JTopo.Link}
+     */
+    JTopoType = null
+
+    /**
+     * 类型
+     * @type {string}
+     */
+    type = ''
+
+    /**
+     * 切换对应类型表单的模态窗口显影
+     */
+    toggleModel() {}
+
+    /**
+     * 可直接赋值到 node 节点 的属性，赋值直接影响 node 绘画效果
+     * @type {[]}
+     */
+    formNameEditArr = []
+
+    /**
+     * 类型描述
+     * @type {String}
+     */
+    label = ''
+
+    /**
+     * 自定义绘制函数
+     */
+    nodeInit(){}
+}
 /**
  * 节点类型，可以得到一些关于节点的东西
  * jTopoNodeName 是 初始化 node 的函数名
@@ -83,16 +119,22 @@ let images = [
 var typeMap = new Map([
         [
             'text', {
+                JTopoType: JTopo.TextNode,
+                type: 'text',
                 jTopoNodeName: 'TextNode',
                 toggleModal: () => $('#text_edit').modal('toggle'),
                 formNameEditArr: ['text', 'fontColor'], // 对应需要编辑的选项
+                label: '文本',
             }
         ],
         [
             'image', {
+                JTopoType: JTopo.Node,
+                type: 'image',
                 jTopoNodeName: 'Node',
                 toggleModal: () => $('#image_edit').modal('toggle'),
                 formNameEditArr: ['alpha'], // 对应需要编辑的选项
+                label: '图片',
                 nodeInit: function (node) {
                     node.setImage(node.__src)
                 }
@@ -100,9 +142,12 @@ var typeMap = new Map([
         ],
         [
             'interface', {
+                JTopoType: JTopo.Node,
+                type: 'interface',
                 jTopoNodeName: 'Node',
                 toggleModal: () => $('#interface_edit').modal('toggle'),
                 formNameEditArr: [], // 对应需要编辑的选项
+                label: '接口',
                 nodeInit: function (node) {
                     node.setImage(images[Math.floor(Math.random() * images.length)])
                 }
@@ -110,9 +155,13 @@ var typeMap = new Map([
         ],
         [
             'shape', {
+
+                JTopoType: JTopo.Node,
+                type: 'shape',
                 jTopoNodeName: 'Node',
                 toggleModal: () => $('#shape_edit').modal('toggle'),
                 formNameEditArr: [], // 对应需要编辑的选项
+                label: '形状',
                 nodeInit: function (node) {
                     // node.zIndex = -1
                     // if (node.__selectShape === 'rect') {
