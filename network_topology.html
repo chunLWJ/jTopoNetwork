@@ -460,9 +460,11 @@
 </div>
 </body>
 
-<script src="./js/util.js" type="text/javascript"></script>
 <script src="./js/jtopo-0.4.8-dev.js" type="text/javascript"></script>
-<script src="./js/jtopo-editor.js" type="text/javascript"></script>
+<!--<script src="./js/jtopo-editor.js" type="text/javascript"></script>-->
+
+<script src="./js/util.js" type="text/javascript"></script>
+<script src="./js/jtopo-editor-demand.js" type="text/javascript"></script>
 <script type="text/javascript">
 
     // 设置canvas画布大小
@@ -470,24 +472,25 @@
     canvas.height = $(window).height() - $('.topology-context').height();
 
     $(document).ready(function () {
-        // 选择连线方式后的css样式
-        $('img[id^=link]').click(function () {
-            $('img[id^=link]').css("background-color", "white");
-            $(this).css("background-color", "darkgray");
-        })
-
-        // 节点树中每个节点的拖放动作定义给拓扑图编辑器
-        var nodes = $("[topo-div-type='topo-node']");
-        var nodeLength = nodes.length;
-        for (var i = 0; i < nodeLength; i++) {
-            var text = $(nodes[i]).find("span").eq(0).text();
-            editor.drag(nodes[i], document.getElementById('topology-canvas'), text);
-        }
+        // // 选择连线方式后的css样式
+        // $('img[id^=link]').click(function () {
+        //     $('img[id^=link]').css("background-color", "white");
+        //     $(this).css("background-color", "darkgray");
+        // })
+        //
+        // // 节点树中每个节点的拖放动作定义给拓扑图编辑器
+        // var nodes = $("[topo-div-type='topo-node']");
+        // var nodeLength = nodes.length;
+        // for (var i = 0; i < nodeLength; i++) {
+        //     var text = $(nodes[i]).find("span").eq(0).text();
+        //     editor.drag(nodes[i], document.getElementById('topology-canvas'), text);
+        // }
         // 加载网络拓扑图
         // editor.loadTopology(rootPath + '/json/network.json', "img/backimg.png");
-        editor.init('testId', './img/backimg2.png', '-1')
+        // editor.init('testId', './img/backimg2.png', '-1')
 
 
+        editor.init('id',undefined,'topology-canvas')
 
         // switch 初始化
         $('.js-switch').each((index, item) => {

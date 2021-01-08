@@ -1,5 +1,7 @@
 /// 删减掉 jtopo-editor 一些不必要的功能
 
+
+
 /**
  * 基于jtopo-editor.js的二次封装
  * designed by wenyuan
@@ -142,6 +144,10 @@ TopologyPanel.prototype.deleteAllNodes = function () {
 
 class TopologyEditor {
 
+    constructor(id) {
+        console.log('id',id)
+    }
+
     /**
      * 舞台
      * @type {JTopo.Stage}
@@ -249,6 +255,7 @@ class TopologyEditor {
         this.topologyGuid = topologGuid
 
         let _canvas = document.getElementById(canvas)
+        console.log(_canvas)
         _canvas.width = $('body').width()
         _canvas.height = $('body').height()
 
@@ -257,7 +264,7 @@ class TopologyEditor {
             this.scene = this.stage.childs[0]
         } else {
             this.stage = new JTopo.Stage(_canvas)
-            this.scene = new JTopo.scene(this.stage)
+            this.scene = new JTopo.Scene(this.stage)
         }
 
         this.stage.frames = this.config.stageFrames // 帧数/秒
@@ -294,6 +301,7 @@ class TopologyEditor {
      * 初始化 DOM 事件
      */
     initDomEvent(){
+        let self = this;
         // 监听全局键盘按下
         $(document).keydown(function(e) {
             if (e.which === 46) {
@@ -314,7 +322,7 @@ class TopologyEditor {
 
         $('.node_submit').on('click',function(){
             let type = $(this).attr('data-type')
-            this.nodeAddEdit(type)
+            self.nodeAddEdit(type)
         })
     }
 
@@ -335,15 +343,15 @@ class TopologyEditor {
         this.stage.mouseout(function (event) {
             // 删掉节点带出来的连线
             if (
-                self.currentLink &&
-                event.target == null
-                // (
-                //     event.target == null ||
-                //     event.target == self.beginNode ||
-                //     event.target === self.currentLink
-                // )
+                self.link &&
+                (
+                    event.target == null ||
+                    event.target == self.beginNode ||
+                    event.target === self.link
+                )
             ) {
-                self.scene.remove(self.currentLink)
+                self.scene.remove(self.link)
+                self.beginNode = null
             }
         })
     }
@@ -409,9 +417,9 @@ class TopologyEditor {
                     if (self.beginNode == null) {
                         // 没有钱起始节点，就没有临时线，但是要产生 临时线
                         self.beginNode = event.target
-                        self.currentLink = this.getLink(self.tempNodeA,self.tempNodeZ)
+                        self.link = self.getLink(self.tempNodeA,self.tempNodeZ)
                         // this 是这个场景事件
-                        this.add(self.currentLink) // 添加临时线到场景中
+                        this.add(self.link) // 添加临时线到场景中
                         self.tempNodeA.setLocation(event.x,event.y)
                         self.tempNodeZ.setLocation(event.x,event.y)
                     } else if (
@@ -425,16 +433,16 @@ class TopologyEditor {
                         let link = self.getLink(self.beginNode,endNode)
                         this.add(link) // 添加到场景
                         self.beginNode = null
-                        this.remove(self.currentLink) // 临时线 删除
-                        self.currentLink = null
+                        this.remove(self.link) // 临时线 删除
+                        self.link = null
                     }
                 } else {
                     // 鼠标按下空的地方
                     self.beginNode = null
                     // 存在线就请掉
-                    if (self.currentLink) {
-                        this.remove(self.currentLink)
-                        self.currentLink = null
+                    if (self.link) {
+                        this.remove(self.link)
+                        self.link = null
                     }
 
                 }
@@ -485,7 +493,7 @@ class TopologyEditor {
      * @param nodeB {JTopo.Node}
      */
     getLink(nodeA,nodeB){
-        let lineLink = Map([
+        let lineLink = new Map([
             ['line','Link'],
             ['foldLine','FoldLink'],
             ['flexLine','FlexionalLink'],
@@ -511,7 +519,9 @@ class TopologyEditor {
      * @param type {TypeOption}
      */
     addNode(typeOption) {
-        let node = typeOption.jTopoNodeName()
+        // console.log(typeOption.jTopoNodeName)
+        // let node = new typeOption.jTopoNodeName()
+        let node = new typeOption.JTopoType()
         node.setLocation(this.xInCanvas,this.yInCanvas)
         // 打上 类型 标记
         node.__type__ = typeOption.type
@@ -613,3 +623,5 @@ function menuPositionShow(menu,left,top){
         left,top
     }).show()
 }
+
+var editor = new TopologyEditor('mainControl')
