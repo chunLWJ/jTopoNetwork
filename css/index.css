@@ -25,16 +25,19 @@
 .menu ul li {
     overflow: hidden;
     width: 120px;
-    height: 40px;
     margin: 10px 0px;
     cursor: pointer;
-}
-.menu ul li > span {
+
     height: 40px;
     line-height: 40px;
+    color: white;
+}
+.menu ul li > span {
     display: inline-block;
     text-align: center;
-    vertical-align: center;
+    font-size: 16px;
+    line-height: 1;
+    vertical-align: middle;
 }
 .menu ul li > span:nth-child(1) {
     width: 30px;

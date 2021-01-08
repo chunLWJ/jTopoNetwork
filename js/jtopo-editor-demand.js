@@ -209,6 +209,12 @@ class TopologyEditor {
     mainMenu = $('#main-menu')
 
     /**
+     * 节点菜单
+     * @type {*}
+     */
+    nodeMenu = $('#node-menu')
+
+    /**
      * 节点是否编辑
      * @type {boolean}
      */
@@ -243,6 +249,12 @@ class TopologyEditor {
      */
     beginNode = null
 
+    /**
+     * 是否多选，这个模式如果是 select，自带多选，也不用去监听 ctrl 的按键
+     * 保留不使用
+     * @type {boolean}
+     */
+    isSelectedMode = false
 
     /**
      * 初始化
@@ -282,6 +294,7 @@ class TopologyEditor {
      * 初始化菜单栏事件
      */
     initMenus(){
+        let self = this;
         // 系统设置菜单
         this.mainMenu.on('click', function (event) {
             // 关闭菜单
@@ -292,9 +305,64 @@ class TopologyEditor {
         this.mainMenu.on('click','div[data-type]',function(){
             let type = $(this).attr('data-type')
             $('.form_title').html(`添加${typeMap.get(type).label}`)
-            this.nodeEdit = false
+            self.nodeEdit = false
             typeMap.get(type) && typeMap.get(type).toggleModal()
         })
+
+
+        this.nodeMenu.on('click',function () {
+            $(this).hide()
+        })
+        this.nodeMenu.on('click','div[data-type]',function () {
+            let type = $(this).attr('data-type')
+            self.nodeTypeEvent(type)
+        })
+
+
+
+    }
+
+    nodeTypeEvent(type){
+        switch (type) {
+            case 'delete':
+                this.selectionDelete()
+            break;
+            case 'edit':
+                this.selectionEdit()
+            break;
+            case 'copy':
+                this.selectionCopy()
+        }
+    }
+
+    selectionEdit(){
+        let nodes = this.getSelectedNodes()
+        let [node] = nodes
+        if (nodes.length === 1) {
+            // 是自定义类型
+            if (node.__type__) {
+                let typeOption = typeMap.get(node.__type__)
+                $('.form_title').html(`编辑${typeOption.label}`)
+                this.nodeEdit = true
+                this.editSyncForm(node)
+                typeOption.toggleModal()
+            } else {
+                alert('该类型节点不支持编辑')
+            }
+        } else {
+            alert('当前没有选中的节点、不支持多编辑')
+        }
+    }
+
+    selectionDelete(){
+        let nodes = this.getSelectedNodes()
+        if (nodes.length > 0) {
+            if (confirm(`是否删除选中的 ${nodes.length} 个节点`)) {
+                nodes.forEach(item => this.scene.remove(item))
+            }
+        } else {
+            alert('当前没有选中的节点')
+        }
     }
 
     /**
@@ -307,14 +375,15 @@ class TopologyEditor {
             if (e.which === 46) {
                 console.log('按下 Delete')
             } else if (e.which === 17) {
-                console.log('按下 Ctrl 键')
+                // self.isSelectedMode = true
+                // console.log('按下 Ctrl 键，进入多选')
             }
             console.log(`按下其他键: ${e.which}`)
         })
         // 监听全局键盘松开
         $(document).keyup(function (e) {
             if (e.which === 17) {
-                console.log('松开了 Ctrl 键')
+                // console.log('松开了 Ctrl 键，退出多选')
                 // self.isSelectedMode = false
                 // return false
             }
@@ -343,7 +412,8 @@ class TopologyEditor {
         this.stage.mouseout(function (event) {
             // 删掉节点带出来的连线
             if (
-                self.link &&
+                self.link
+                /* !self.isSelectedMode */ &&
                 (
                     event.target == null ||
                     event.target == self.beginNode ||
@@ -376,6 +446,22 @@ class TopologyEditor {
         // 鼠标双击
         this.scene.dbclick(function(event){
             if (event.target) self.currentNode = event.target
+        })
+
+        // 清楚起始节点不完整的 线
+        this.scene.mousedown(function (e) {
+            if (
+                self.link
+                /* !self.isSelectedMode */ &&
+                (
+                    e.target == null ||
+                    e.target == self.beginNode ||
+                    e.target === self.link
+                )
+            ) {
+                this.remove(self.link)
+                self.beginNode = null
+            }
         })
 
         // 鼠标按下松开事件
@@ -413,6 +499,7 @@ class TopologyEditor {
                 if (
                     event.target != null &&
                     event.target instanceof JTopo.Node
+                    /* !self.isSelectedMode */
                 ) {
                     if (self.beginNode == null) {
                         // 没有钱起始节点，就没有临时线，但是要产生 临时线
@@ -453,6 +540,11 @@ class TopologyEditor {
         // 鼠标移动事件
         // 一般是实现 临时线 的移动效果
         this.scene.mousemove(function (event) {
+            // if (self.isSelectedMode) {
+            //     if (self.link) {
+            //         this.remove(self.link)   
+            //     }
+            // }
             if (self.beginNode) {
                 self.tempNodeZ.setLocation(event.x,event.y)
             }
@@ -460,7 +552,7 @@ class TopologyEditor {
 
         // 鼠标拖动
         this.scene.mousedrag(function(event) {
-            if (self.beginNode) {
+            if (self.beginNode /* !self.isSelectedMode */) {
                 self.tempNodeZ.setLocation(event.x, event.y)
             }
         })
@@ -542,17 +634,14 @@ class TopologyEditor {
         let options = this.getTypeFormOptions(node.__type__) // 获取表单配置
         console.log('options',options)
 
-        // 已 __ 开头为标注为 自定义属性
-        // 我们这里假设 已 __ 开头 的属性只有一个的时候是 添加，添加的时候只需要无脑赋值即可
-        // 但是多个的时候就是编辑，这个时候我们需要根据 属性 存在 赋值，不存在则删了
-        let __names = getStart__Obj(node),__namesLength = Object.keys(__names).length; // 属性对象，属性个数
-        if (__namesLength === 1) // 一个的时候，即 __type__ 我们认为是添加，无脑赋值即可
-            for (let optionKey in options) node[optionKey] = options[optionKey]
-        else // 如果不是 1个，我们就遍历 属性
-            for (const namesKey in __names)
-                if (namesKey === '__type__') continue // 类型 直接 本次循环挑中
-                else if (namesKey in node) node[namesKey] = options[namesKey] // 存在赋值
-                else delete node[namesKey] // 不存在直接删除，确保一些情况值空的话没传进来，但是这个属性会影响绘制效果
+        let __names = getStart__Obj(node)
+        for (const namesKey in __names) { // 删除 所有 自定义属性
+            if (namesKey === '__type__') continue
+            delete node[namesKey]
+        }
+        for (const optionsKey in options) { // 存在 表单 的即赋值
+            node[optionsKey] = options[optionsKey]
+        }
 
         // 选项的 formNameEditArr 表示可以直接赋值到 node 上，并产生相应的效果
         insides.forEach(item => {
@@ -588,8 +677,10 @@ class TopologyEditor {
             else { // 编辑
                 let nodes = this.getSelectedNodes()
                 let [node] = nodes
-                if (nodes.length === 1)
+                if (nodes.length === 1) {
                     this.nodeFormSync(node,typeOption.formNameEditArr)
+                    console.log('node',node)
+                }
                 else console.log('暂时不支持多编辑')
             }
             typeOption.toggleModal()
@@ -604,9 +695,20 @@ class TopologyEditor {
      */
     editSyncForm(node){
         let form = $(`#${node.__type__}_edit_form`)
+        if (form.length === 0) {
+            throw new Error(`没有对应的表单 ${node.__type__}_edit_form`)
+        }
         for (const nodeKey in node) {
             if (nodeKey.startsWith('__')) {
-                form.find(`input[name=${nodeKey.slice(2)}]`).val(node[nodeKey])
+                let formItem =  form.find(`input[name=${nodeKey.slice(2)}]`)
+                if (formItem.hasClass('js-switch')) {
+                    let checked = formItem.prop('checked')
+                    if (node[nodeKey]) {
+                        if (!checked) switchery.bindClick()
+                    }
+                } else {
+                    formItem.val(node[nodeKey])
+                }
             }
         }
     }
